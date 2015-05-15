@@ -48,27 +48,75 @@ scrLine27 : string "                             *          "
 scrLine28 : string "                   /\\                   "
 scrLine29 : string "                 ------                 "
 
-shipPosA: var #1
-shipPosB: var #1
+shipPosA: var #1            ; "Old" ship position
+shipPosB: var #1            ; "New" ship position
+gameOver: var #1            ; End game flag
+endCounter: var #1          ; End game clock
+
+foodPos: var #1             ; Current food position
+foodCur: var #1             ; Current rand in list
+foodRls: var #1             ; Food rands list size
+foodExs: var #1             ; Current food state
+foodRand: var #10
+static foodRand + #0, #105
+static foodRand + #1, #83
+static foodRand + #2, #470
+static foodRand + #3, #558
+static foodRand + #4, #641
+static foodRand + #5, #1020
+static foodRand + #6, #1142
+static foodRand + #7, #870
+static foodRand + #8, #921
+static foodRand + #9, #97
 
 main:
 
+    ; Initialize player
     loadn r0, #0
     store shipPosA, r0
     loadn r0, #615
     store shipPosB, r0
 
-    ; See label parameters
+    ; Initialize scenario
     loadn r0, #0
     loadn r1, #scrLine0
     loadn r2, #0
     call printScreen
 
+    ; Initialize artifacts
+    loadn r0, #0
+    store foodCur, r0
+    loadn r0, #10
+    store foodRls, r0
+    loadn r0, #875
+    store foodPos, r0
+    loadn r0, #0
+    store foodExs, r0
+
+    ; Initialize counters
+    loadn r0, #10
+    store endCounter, r0
+    loadn r0, #0
+    store gameOver, r0
+    loadn r2, #0
+
     shipLoop:
+
         call clrShip
         call drwShip
         call setShip
-        jmp shipLoop
+        call drwFood
+        call setFood
+
+        loadn r1, #100
+        mod r1, r0, r1
+        cmp r1, r2
+        ceq setCounter
+
+        load r1, gameOver
+        cmp r1, r2
+        inc r0
+        jeq shipLoop
 
     halt
 
@@ -240,6 +288,81 @@ setShip:
         jeq setShipEnd
         inc r0
         jmp setShipEnd
+
+drwFood:
+    push r0
+    push r1
+    push r2
+
+    load r0, foodExs
+    loadn r1, #1
+    cmp r0, r1
+    jeq drwFoodEnd
+
+    loadn r0, #1
+    store foodExs, r0
+    loadn r0, #'O'
+    loadn r2, #2304
+    add r0, r0, r2
+    load r1, foodPos
+    outchar r0, r1
+
+    drwFoodEnd:
+    pop r2
+    pop r1
+    pop r0
+    rts
+
+setFood:
+    push r0
+    push r1
+    push r2
+
+    load r0, shipPosA   ; Load ship position
+    load r1, foodPos    ; Load food position
+    cmp r0, r1          ; The ship eat the food?
+    load r0, foodCur    ; Just load food tracker
+    jne setFoodEnd      ; End routine, if not
+    loadn r1, #0        ; Otherwise load value
+    store foodExs, r1   ; And set to food flag
+
+    loadn r1, #foodRand ; Load food rand list
+    add r1, r1, r0      ; Position list index
+    loadi r2, r1        ; Prime vale at index
+    store foodPos, r2   ; Store new position
+    inc r0              ; Increment tracker
+    load r1, foodRls    ; Load rand list size
+    cmp r0, r1          ; Compare with tracker
+    jle setFoodEnd      ; Continue if not maxed
+    loadn r0, #0        ; Reset tracker otherwise
+
+    setFoodEnd:
+    store foodCur, r0   ; Re-store food tracker
+    pop r2
+    pop r1
+    pop r0
+    rts
+
+setCounter:
+    push r0
+    push r1
+    push r2
+
+    load r0, endCounter
+    load r1, foodExs
+    loadn r2, #0
+    cmp r1, r2
+    jne setCounterEnd
+    loadn r2, #5
+    add r0, r0, r2
+
+    setCounterEnd:
+    dec r0
+    store endCounter, r0
+    pop r2
+    pop r1
+    pop r0
+    rts
 
 printScreen:
     ; r0 = Initial printing position
