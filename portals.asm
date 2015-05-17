@@ -17,6 +17,7 @@ jmp main
 ; 3584 aqua							1110 0000
 ; 3840 branco						1111 0000
 
+scrOver   : string "                GAMEOVER                "
 scrLine0  : string "                 PORTAL                 "
 scrLine1  : string "----------------------------------------"
 scrLine2  : string "                 ------                 "
@@ -100,23 +101,31 @@ main:
     store gameOver, r0
     loadn r2, #0
 
-    shipLoop:
-
+    MainLoop:
         call clrShip
         call drwShip
         call setShip
         call drwFood
         call setFood
 
-        loadn r1, #100
+        loadn r1, #10
         mod r1, r0, r1
         cmp r1, r2
         ceq setCounter
 
-        load r1, gameOver
-        cmp r1, r2
+;        load r1, gameOver
+;        cmp r1, r2
+;        jne MainDone
+
+        call Delay
         inc r0
-        jeq shipLoop
+        jmp MainLoop
+
+    MainDone:
+    loadn r0, #0
+    loadn r1, #scrOver
+    loadn r2, #2304
+    call printString
 
     halt
 
@@ -349,6 +358,14 @@ setCounter:
     push r2
 
     load r0, endCounter
+    loadn r1, #0
+    cmp r0, r1
+    loadn r1, #1
+    store gameOver, r1
+    jeq setCounterEnd
+
+    loadn r1, #0
+    store gameOver, r1
     load r1, foodExs
     loadn r2, #0
     cmp r1, r2
@@ -421,6 +438,24 @@ printString:
     pop r4
     pop r3
     pop r2
+    pop r1
+    pop r0
+    rts
+
+Delay:
+    push r0
+    push r1
+    loadn r0, #640
+
+    loop1:
+        loadn r1, #640
+
+        loop2:
+            dec r1
+            jnz loop2
+            dec r0
+            jnz loop1
+
     pop r1
     pop r0
     rts
