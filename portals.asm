@@ -17,46 +17,78 @@ jmp main
 ; 3584 aqua							1110 0000
 ; 3840 branco						1111 0000
 
-scrOver   : string "                GAMEOVER                "
-scrLine0  : string "                 PORTAL                 "
+scrOver0  : string ":'#####::::::'###::::'##::::'##:'#######"
+scrOver1  : string "'##.. ##::::'## ##::: ###::'###: ##....:"
+scrOver2  : string " ##::..::::'##:. ##:: ####'####: ##:::::"
+scrOver3  : string " ##:'####:'##:::. ##: ## ### ##: #####::"
+scrOver4  : string " ##:: ##:: #########: ##. #: ##: ##..:::"
+scrOver5  : string " ##:: ##:: ##.... ##: ##:.:: ##: ##:::::"
+scrOver6  : string ". #####::: ##:::: ##: ##:::: ##: #######"
+scrOver7  : string ":.....::::..:::::..::..:::::..::.......:"
+scrOver8  : string ":'######::'##::::'##:'#######:'########:"
+scrOver9  : string "'##... ##: ##:::: ##: ##....:: ##.... ##"
+scrOver10 : string " ##::: ##: ##:::: ##: ##:::::: ##:::: ##"
+scrOver11 : string " ##::: ##: ##:::: ##: #####::: ########:"
+scrOver12 : string " ##::: ##:. ##:: ##:: ##..:::: ##.. ##::"
+scrOver13 : string " ##::: ##::. ## ##::: ##:::::: ##::. ##:"
+scrOver14 : string ". ######::::. ###:::: #######: ##:::. ##"
+scrOver15 : string ":......::::::...:::::.......::..:::::..:"
+scrOver16 : string "d8888b. d8888b d888888b d8888b. db    db"
+scrOver17 : string "88  `8D 88'    `~~88~~' 88  `8D `8b  d8'"
+scrOver18 : string "88oobY' 88oooo    88    88oobY'  `8bd8' "
+scrOver19 : string "88`8b   88~~~~    88    88`8b      88   "
+scrOver20 : string "88 `88. 88.       88    88 `88.    88   "
+scrOver21 : string "88   YD Y8888P    YP    88   YD    YP   "
+scrOver22 : string "                                        "
+scrOver23 : string "                .d888b.                 "
+scrOver24 : string "                VP  `8D                 "
+scrOver25 : string "                   odD'                 "
+scrOver26 : string "                  8P'                   "
+scrOver27 : string "                  oo                    "
+scrOver28 : string "                  VP                    "
+scrOver29 : string "                                        "
+rodaFoot  : string "R TO REPLAY                FINALSCORE:  "
+
+scrLine0  : string "PORTALS ;D                      SCORE:  "
 scrLine1  : string "----------------------------------------"
 scrLine2  : string "                 ------                 "
-scrLine3  : string "                   \\/                   "
-scrLine4  : string "                               *        "
-scrLine5  : string "                                        "
-scrLine6  : string "     *                                  "
-scrLine7  : string "               *                        "
-scrLine8  : string "                                        "
-scrLine9  : string "                                        "
-scrLine10 : string "        *                 *             "
-scrLine11 : string "                                        "
-scrLine12 : string "                                        "
-scrLine13 : string "|            *                         |"
-scrLine14 : string "|\\                                    /|"
-scrLine15 : string "|/                                    \\|"
-scrLine16 : string "|                                      |"
-scrLine17 : string "                  *                     "
-scrLine18 : string "   *                                    "
-scrLine19 : string "                                        "
-scrLine20 : string "               *                 *      "
-scrLine21 : string "                                        "
-scrLine22 : string "                         *              "
-scrLine23 : string "                                        "
-scrLine24 : string "    *                                   "
-scrLine25 : string "                                        "
-scrLine26 : string "           *                            "
-scrLine27 : string "                             *          "
-scrLine28 : string "                   /\\                   "
-scrLine29 : string "                 ------                 "
+scrLine3  : string "                   \\/           *       "
+scrLine4  : string "     *  ____  ____ ________   _____   * "
+scrLine5  : string " *     / __ \\/ __ /_  __/ /  / ___/     "
+scrLine6  : string "      / /_/ / /_/ // / / /   \\__ \\      "
+scrLine7  : string "     / ____/ _, _// / / /______/ /   *  "
+scrLine8  : string "    /_/   /_/ |_|/_/ /_____/____/       "
+scrLine9  : string "     *                            *     "
+scrLine10 : string "  *     ____  ____ ________   _____     "
+scrLine11 : string "       / __ \\/ __ /_  __/ /  / ___/ *   "
+scrLine12 : string "      / /_/ / /_/ // / / /   \\__ \\      "
+scrLine13 : string "|    / ____/ _, _// / / /______/ /     |"
+scrLine14 : string "|\\  /_/   /_/ |_|/_/ /_____/____/     /|"
+scrLine15 : string "|/             *                      \\|"
+scrLine16 : string "|       ____  ____ ________   _____    |"
+scrLine17 : string "       / __ \\/ __ /_  __/ /  / ___/     "
+scrLine18 : string "   *  / /_/ / /_/ // / / /   \\__ \\      "
+scrLine19 : string "     / ____/ _, _// / / /______/ /      "
+scrLine20 : string "    /_/   /_/ |_|/_/ /_____/____/       "
+scrLine21 : string "                                    *   "
+scrLine22 : string "  *     ____  ____ ________   _____     "
+scrLine23 : string "       / __ \\/ __ /_  __/ /  / ___/     "
+scrLine24 : string "      / /_/ / /_/ // / / /   \\__ \\ *    "
+scrLine25 : string "  *  / ____/ _, _// / / /______/ /      "
+scrLine26 : string "    /_/   /_/ |_|/_/ /_____/____/       "
+scrLine27 : string "      *                      *          "
+scrLine28 : string " *           *     /\\                *  "
+scrLine29 : string "    *            ------         *       "
 
-gameOver: var #1            ; Game over son.
+gameOver:  var #1            ; Game over son
+shipShape: var #1            ; Custom ship shape
 
-shipPosA: var #1            ; "Old" ship position
-shipPosB: var #1            ; "New" ship position
-shipDir:  var #1            ; Current ship direction
-shipLen:  var #1            ; Current ship length
-shipVec:  var #40           ; Ship positions vector
-shipSpd:  var #1            ; Ship draw delay interval
+shipPosA:  var #1            ; "Old" ship position
+shipPosB:  var #1            ; "New" ship position
+shipDir:   var #1            ; Current ship direction
+shipLen:   var #1            ; Current ship length
+shipVec:   var #40           ; Ship positions vector
+shipSpd:   var #1            ; Ship draw delay interval
 
 foodPos: var #1             ; Current food position
 foodCur: var #1             ; Current rand in list
@@ -88,12 +120,8 @@ main:
     store shipDir, r0
     loadn r0, #5
     store shipSpd, r0
-
-    ; Initialize scenario
-    loadn r0, #0
-    loadn r1, #scrLine0
-    loadn r2, #0
-    call printScreen
+    loadn r0, #'%'
+    store shipShape,r0
 
     ; Initialize artifacts
     loadn r0, #875
@@ -104,14 +132,29 @@ main:
     store foodEtn, r0
 
     ; Game is on, not over
-    loadn r0, #0
+   ;loadn r0, #0
     store gameOver, r0
 
+    ; Initialize scenario
+   ;loadn r0, #0
+    loadn r1, #scrLine0
+    loadn r2, #0
+    call printString
+    loadn r0, #40
+    loadn r1, #scrLine1
+   ;loadn r2, #0
+    call printString
+    loadn r0, #80
+    loadn r1, #scrLine2
+    loadn r2, #1280
+    call printScreen
+
     mainLoop:
+        call ctlShip
+
         load r1, shipSpd
         mod r1, r0, r1
         jnz mainLoop_step
-            call ctlShip
             call clrShip
             call drwShip
             call setShip
@@ -129,12 +172,43 @@ main:
         jmp mainLoop
 
     mainLoopEnd:
-        loadn r0, #40
-        loadn r1, #scrOver
-        loadn r2, #2304
-        call printString
+    call endGameScr
+    jmp main
 
     halt
+
+endGameScr:
+    push r0
+    push r1
+    push r2
+
+    ; Print EndGame screen
+    loadn r0, #0
+    loadn r1, #scrOver0
+    loadn r2, #2304
+    call printScreen
+    loadn r0, #1160
+    loadn r1, #rodaFoot
+    loadn r2, #0
+    call printString
+
+    ; Print final score
+    load r0, foodEtn
+    loadn r1, #1198
+    call printNumber
+
+    scrLock:
+        inchar r0
+        loadn r1, #'r'
+        cmp r0, r1
+        jeq scrUnlock
+        jmp scrLock
+
+    scrUnlock:
+    pop r2
+    pop r1
+    pop r0
+    rts
 
 ctlShip:
     push r0
@@ -172,6 +246,8 @@ clrShip:
 
     ; WHY THE FUCK DOES THIS WORK???
     loadi r1, r1
+    loadn r2, #1280
+    add r1, r1, r2
     outchar r1, r0
 
     clrShipEnd:
@@ -190,7 +266,7 @@ drwShip:
     cmp r1, r0
     jeq drwShipEnd
 
-    loadn r0, #'X'
+    load r0, shipShape
     loadn r2, #2560
     add r0, r0, r2
     outchar r0, r1
@@ -235,6 +311,8 @@ setShip:
 
     ; Move ship into portal
     setShipPortalW:
+        loadn r1, #'&'
+        store shipShape, r1
         loadn r1, #137
         cmp r0, r1
         jle setShipMoveW
@@ -246,6 +324,8 @@ setShip:
         jmp setShipEnd
 
     setShipPortalA:
+        loadn r1, #'$'
+        store shipShape, r1
         loadn r1, #40
         mod r1, r0, r1
         loadn r2, #1
@@ -262,6 +342,8 @@ setShip:
         jmp setShipEnd
 
     setShipPortalS:
+        loadn r1, #'<'
+        store shipShape, r1
         loadn r1, #1137
         cmp r0, r1
         jle setShipMoveS
@@ -273,6 +355,8 @@ setShip:
         jmp setShipEnd
 
     setShipPortalD:
+        loadn r1, #'%'
+        store shipShape, r1
         loadn r1, #40
         mod r1, r0, r1
         loadn r2, #38
@@ -340,7 +424,7 @@ drwFood:
 
     loadn r0, #1
     store foodExs, r0
-    loadn r0, #'O'
+    loadn r0, #'>'
     loadn r2, #2304
     add r0, r0, r2
     load r1, foodPos
