@@ -49,18 +49,21 @@ scrLine27 : string "                             *          "
 scrLine28 : string "                   /\\                   "
 scrLine29 : string "                 ------                 "
 
-foodEtn:  var #1            ; Amount of food eaten
+gameOver: var #1            ; Game over son.
 
 shipPosA: var #1            ; "Old" ship position
 shipPosB: var #1            ; "New" ship position
 shipDir:  var #1            ; Current ship direction
 shipLen:  var #1            ; Current ship length
 shipVec:  var #40           ; Ship positions vector
+shipSpd:  var #1            ; Ship draw delay interval
 
 foodPos: var #1             ; Current food position
 foodCur: var #1             ; Current rand in list
 foodRls: var #1             ; Food rands list size
+foodEtn: var #1             ; Amount of food eaten
 foodExs: var #1             ; Current food state
+
 foodRand: var #10
 static foodRand + #0, #105
 static foodRand + #1, #83
@@ -80,6 +83,10 @@ main:
     store shipPosA, r0
     loadn r0, #615
     store shipPosB, r0
+    loadn r0, #'w'
+    store shipDir, r0
+    loadn r0, #5
+    store shipSpd, r0
 
     ; Initialize scenario
     loadn r0, #0
@@ -88,31 +95,33 @@ main:
     call printScreen
 
     ; Initialize artifacts
-    loadn r0, #0
-    store foodCur, r0
     loadn r0, #10
     store foodRls, r0
     loadn r0, #875
     store foodPos, r0
     loadn r0, #0
+    store foodCur, r0
     store foodExs, r0
-    loadn r0, #0
     store foodEtn, r0
-
-    loadn r2, #4
+    store gameOver, r0
 
     mainLoop:
-        call ctlShip
-        call clrShip
-        call drwShip
-        call setShip
 
-        call drwFood
-        call setFood
+        load r1, shipSpd
+        mod r1, r0, r1
+        jnz step
+            call ctlShip
+            call clrShip
+            call drwShip
+            call setShip
+            call drwFood
+            call setFood
+        step:
 
-        load r1, foodEtn
+        load r1, gameOver
+        loadn r2, #0
         cmp r1, r2
-        jeq mainDone
+        jne mainDone
 
         call Delay
         inc r0
@@ -124,6 +133,7 @@ main:
     loadn r2, #2304
     call printString
 
+    ;@@@_HAXORZ_@@@
     load r0, foodEtn
     loadn r1, #37
     dec r0
@@ -287,7 +297,7 @@ setShip:
     setShipMoveW:
         loadn r1, #120
         cmp r0, r1
-        jle setShipEnd
+        jle setExplode
         loadn r1, #40
         sub r0, r0, r1
         jmp setShipEnd
@@ -297,14 +307,14 @@ setShip:
         mod r1, r0, r1
         loadn r2, #0
         cmp r1, r2
-        jeq setShipEnd
+        jeq setExplode
         dec r0
         jmp setShipEnd
 
     setShipMoveS:
         loadn r1, #1159
         cmp r0, r1
-        jgr setShipEnd
+        jgr setExplode
         loadn r1, #40
         add r0, r0, r1
         jmp setShipEnd
@@ -314,8 +324,13 @@ setShip:
         mod r1, r0, r1
         loadn r2, #39
         cmp r1, r2
-        jeq setShipEnd
+        jeq setExplode
         inc r0
+        jmp setShipEnd
+
+    setExplode:
+        loadn r1, #1
+        store gameOver, r1
         jmp setShipEnd
 
 drwFood:
@@ -340,7 +355,13 @@ drwFood:
     loadn r1, #37
     call printNumber
     inc r0
-    store foodEtn,r0
+    store foodEtn, r0
+    load r0, shipSpd
+    loadn r1, #1
+    cmp r0, r1
+    jeq drwFoodEnd
+    dec r0
+    store shipSpd, r0
 
     drwFoodEnd:
     pop r2
@@ -363,7 +384,7 @@ setFood:
 
     loadn r1, #foodRand ; Load food rand list
     add r1, r1, r0      ; Position list index
-    loadi r2, r1        ; Prime vale at index
+    loadi r2, r1        ; Prime value at index
     store foodPos, r2   ; Store new position
     inc r0              ; Increment tracker
     load r1, foodRls    ; Load rand list size
