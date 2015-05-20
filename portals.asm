@@ -51,12 +51,11 @@ scrLine29 : string "                 ------                 "
 
 shipPosA: var #1            ; "Old" ship position
 shipPosB: var #1            ; "New" ship position
-gameOver: var #1            ; End game flag
-endCounter: var #1          ; End game clock
+shipDir:  var #1            ; Current ship direction
 
 foodPos: var #1             ; Current food position
 foodCur: var #1             ; Current rand in list
-foodRls: var #1             ; Food rands list size
+foodRls: var #2             ; Food rands list size
 foodExs: var #1             ; Current food state
 foodRand: var #10
 static foodRand + #0, #105
@@ -101,25 +100,18 @@ main:
     store gameOver, r0
     loadn r2, #0
 
-    MainLoop:
+    mainLoop:
+        call ctlShip
         call clrShip
         call drwShip
         call setShip
+
         call drwFood
         call setFood
 
-        loadn r1, #10
-        mod r1, r0, r1
-        cmp r1, r2
-        ceq setCounter
-
-;        load r1, gameOver
-;        cmp r1, r2
-;        jne MainDone
-
         call Delay
         inc r0
-        jmp MainLoop
+        jmp mainLoop
 
     MainDone:
     loadn r0, #0
@@ -128,6 +120,24 @@ main:
     call printString
 
     halt
+
+ctlShip:
+    push r0
+    push r1
+    push r2
+
+    inchar r0
+    loadn r1, #255
+
+    cmp r0, r1
+    jeq ctlShipEnd
+    store shipDir, r0
+
+    ctlShipEnd:
+    pop r2
+    pop r1
+    pop r0
+    rts
 
 clrShip:
     push r0
@@ -182,7 +192,7 @@ setShip:
     push r1
     push r2
 
-    inchar r1
+    load r1, shipDir
     load r0, shipPosA
 
     loadn r2, #'w'
@@ -202,7 +212,7 @@ setShip:
     jeq setShipPortalD
 
     setShipEnd:
-        store shipPosB, r0
+    store shipPosB, r0
     pop r2
     pop r1
     pop r0
@@ -347,35 +357,6 @@ setFood:
 
     setFoodEnd:
     store foodCur, r0   ; Re-store food tracker
-    pop r2
-    pop r1
-    pop r0
-    rts
-
-setCounter:
-    push r0
-    push r1
-    push r2
-
-    load r0, endCounter
-    loadn r1, #0
-    cmp r0, r1
-    loadn r1, #1
-    store gameOver, r1
-    jeq setCounterEnd
-
-    loadn r1, #0
-    store gameOver, r1
-    load r1, foodExs
-    loadn r2, #0
-    cmp r1, r2
-    jne setCounterEnd
-    loadn r2, #5
-    add r0, r0, r2
-
-    setCounterEnd:
-    dec r0
-    store endCounter, r0
     pop r2
     pop r1
     pop r0
