@@ -60,11 +60,12 @@ shipSpd:  var #1            ; Ship draw delay interval
 
 foodPos: var #1             ; Current food position
 foodCur: var #1             ; Current rand in list
-foodRls: var #1             ; Food rands list size
-foodEtn: var #1             ; Amount of food eaten
 foodExs: var #1             ; Current food state
+foodEtn: var #1             ; Amount of food eaten
 
-foodRand: var #10
+foodRls: var #1             ; Food rands list size
+static foodRls + #0, #10
+foodRand: var #10           ; Food rands list
 static foodRand + #0, #105
 static foodRand + #1, #83
 static foodRand + #2, #470
@@ -79,11 +80,11 @@ static foodRand + #9, #97
 main:
 
     ; Initialize player
-    loadn r0, #0
+    loadn r0, #614
     store shipPosA, r0
     loadn r0, #615
     store shipPosB, r0
-    loadn r0, #'w'
+    loadn r0, #'d'
     store shipDir, r0
     loadn r0, #5
     store shipSpd, r0
@@ -95,49 +96,43 @@ main:
     call printScreen
 
     ; Initialize artifacts
-    loadn r0, #10
-    store foodRls, r0
     loadn r0, #875
     store foodPos, r0
     loadn r0, #0
     store foodCur, r0
     store foodExs, r0
     store foodEtn, r0
+
+    ; Game is on, not over
+    loadn r0, #0
     store gameOver, r0
 
     mainLoop:
-
         load r1, shipSpd
         mod r1, r0, r1
-        jnz step
+        jnz mainLoop_step
             call ctlShip
             call clrShip
             call drwShip
             call setShip
             call drwFood
             call setFood
-        step:
+        mainLoop_step:
 
         load r1, gameOver
         loadn r2, #0
         cmp r1, r2
-        jne mainDone
+        jne mainLoopEnd
 
-        call Delay
+        call delay
         inc r0
         jmp mainLoop
 
-    mainDone:
-    loadn r0, #0
-    loadn r1, #scrOver
-    loadn r2, #2304
-    call printString
-
-    ;@@@_HAXORZ_@@@
-    load r0, foodEtn
-    loadn r1, #37
-    dec r0
-    call printNumber
+    mainLoopEnd:
+        loadn r0, #40
+        loadn r1, #scrOver
+        loadn r2, #2304
+        call printString
 
     halt
 
@@ -352,16 +347,8 @@ drwFood:
     outchar r0, r1
 
     load r0, foodEtn
-    loadn r1, #37
+    loadn r1, #38
     call printNumber
-    inc r0
-    store foodEtn, r0
-    load r0, shipSpd
-    loadn r1, #1
-    cmp r0, r1
-    jeq drwFoodEnd
-    dec r0
-    store shipSpd, r0
 
     drwFoodEnd:
     pop r2
@@ -374,26 +361,40 @@ setFood:
     push r1
     push r2
 
-    load r0, shipPosA   ; Load ship position
-    load r1, foodPos    ; Load food position
-    cmp r0, r1          ; The ship eat the food?
-    load r0, foodCur    ; Just load food tracker
-    jne setFoodEnd      ; End routine, if not
-    loadn r1, #0        ; Otherwise load value
-    store foodExs, r1   ; And set to food flag
+        load r0, shipPosA   ; Load ship position
+        load r1, foodPos    ; Load food position
+        cmp r0, r1          ; The ship eat the food?
+        jne setFoodEnd      ; End routine, if not
+        loadn r1, #0        ; Otherwise load value
+        store foodExs, r1   ; And set to food flag
+    setFood_step1:
 
-    loadn r1, #foodRand ; Load food rand list
-    add r1, r1, r0      ; Position list index
-    loadi r2, r1        ; Prime value at index
-    store foodPos, r2   ; Store new position
-    inc r0              ; Increment tracker
-    load r1, foodRls    ; Load rand list size
-    cmp r0, r1          ; Compare with tracker
-    jle setFoodEnd      ; Continue if not maxed
-    loadn r0, #0        ; Reset tracker otherwise
+        loadn r1, #foodRand ; Load food rand list
+        load r0, foodCur    ; load food tracker
+        add r1, r1, r0      ; Position list index
+        loadi r2, r1        ; Prime value at index
+        store foodPos, r2   ; Store new position
+        inc r0              ; Increment tracker
+        load r1, foodRls    ; Load rand list size
+        cmp r0, r1          ; Compare with tracker
+        jle setFood_step2   ; Continue if not maxed
+        loadn r0, #0        ; Reset tracker otherwise
+    setFood_step2:
+
+        load r1, foodEtn    ; Load amount eaten
+        inc r1              ; Increment
+        store foodEtn, r1   ; Re-store
+        load r1, shipSpd    ; Load redraw speed
+        loadn r2, #1        ; Load comparator
+        cmp r1, r2          ; Compare
+        jeq setFood_step3   ; Skip if at minimum
+        dec r1              ; Decrement if not
+        store shipSpd, r1   ; Re-store
+    setFood_step3:
+
+    store foodCur, r0       ; Re-store food tracker
 
     setFoodEnd:
-    store foodCur, r0   ; Re-store food tracker
     pop r2
     pop r1
     pop r0
@@ -460,7 +461,7 @@ printString:
     pop r0
     rts
 
-Delay:
+delay:
     push r0
     push r1
     loadn r0, #640
