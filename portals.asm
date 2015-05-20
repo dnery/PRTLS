@@ -49,13 +49,17 @@ scrLine27 : string "                             *          "
 scrLine28 : string "                   /\\                   "
 scrLine29 : string "                 ------                 "
 
+foodEtn:  var #1            ; Amount of food eaten
+
 shipPosA: var #1            ; "Old" ship position
 shipPosB: var #1            ; "New" ship position
 shipDir:  var #1            ; Current ship direction
+shipLen:  var #1            ; Current ship length
+shipVec:  var #40           ; Ship positions vector
 
 foodPos: var #1             ; Current food position
 foodCur: var #1             ; Current rand in list
-foodRls: var #2             ; Food rands list size
+foodRls: var #1             ; Food rands list size
 foodExs: var #1             ; Current food state
 foodRand: var #10
 static foodRand + #0, #105
@@ -92,13 +96,10 @@ main:
     store foodPos, r0
     loadn r0, #0
     store foodExs, r0
-
-    ; Initialize counters
-    loadn r0, #10
-    store endCounter, r0
     loadn r0, #0
-    store gameOver, r0
-    loadn r2, #0
+    store foodEtn, r0
+
+    loadn r2, #4
 
     mainLoop:
         call ctlShip
@@ -109,15 +110,24 @@ main:
         call drwFood
         call setFood
 
+        load r1, foodEtn
+        cmp r1, r2
+        jeq mainDone
+
         call Delay
         inc r0
         jmp mainLoop
 
-    MainDone:
+    mainDone:
     loadn r0, #0
     loadn r1, #scrOver
     loadn r2, #2304
     call printString
+
+    load r0, foodEtn
+    loadn r1, #37
+    dec r0
+    call printNumber
 
     halt
 
@@ -326,6 +336,12 @@ drwFood:
     load r1, foodPos
     outchar r0, r1
 
+    load r0, foodEtn
+    loadn r1, #37
+    call printNumber
+    inc r0
+    store foodEtn,r0
+
     drwFoodEnd:
     pop r2
     pop r1
@@ -440,3 +456,81 @@ Delay:
     pop r1
     pop r0
     rts
+
+printNumber:
+    ; Parametors: r0 - numero; r1 - posicao na tela
+	push r0
+	push r1
+	push r2
+	push r3
+	push r4
+	push r5
+	push r6
+
+	loadn r3, #9
+	loadn r2, #48
+	cmp r0, r3
+	jgr PrintnrDezena
+	add r0, r0, r2
+	outchar r0, r1
+	jmp PrintnrRts
+
+PrintnrDezena:
+	loadn r3, #99
+	cmp r0, r3
+	jgr PrintnrCentena
+	loadn r6, #10
+	div r4, r0, r6
+	loadn r2, #48
+	add r5, r4, r2
+	outchar r5, r1
+	mul r4, r4, r6
+	sub r0, r0, r4
+	add r0, r0, r2
+	inc r1
+	outchar r0, r1
+	jmp PrintnrRts
+
+PrintnrCentena:
+	loadn r3, #999
+	cmp r0, r3
+	jgr PrintnrMilhar
+	loadn r6, #100
+	div r4, r0, r6
+	loadn r2, #48
+	add r5, r4, r2
+	outchar r5, r1
+	mul r4, r4, r6
+	sub r4, r0, r4
+	loadn r6, #10
+	div r0, r4, r6
+	loadn r2, #48
+	add r5, r0, r2
+	inc r1
+	outchar r5, r1
+	mul r0, r0, r6
+	sub r0, r4, r0
+	add r0, r0, r2
+	inc r1
+	outchar r0, r1
+	jmp PrintnrRts
+
+PrintnrMilhar:
+	loadn r0, #'?'
+	outchar r0, r1
+	inc r1
+	outchar r0, r1
+	inc r1
+	outchar r0, r1
+	inc r1
+	outchar r0, r1
+
+PrintnrRts:	; Fim da subrotina
+	pop r6
+	pop r5
+	pop r4
+	pop r3
+	pop r2
+	pop r1
+	pop r0
+	rts
