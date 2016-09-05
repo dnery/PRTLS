@@ -1,9 +1,10 @@
-###Assignment 2: Console game
+# PoRTaLS
+A little arcade-style navigation game written in assembly language for the [ICMC
+processor](https://github.com/simoesusp/Processador-ICMC). Run over the bad guys
+with your green ship as they pop up!
 
-Don't forget to run 
-```
-:loadview
-```
-to restore folds!
+[![Simulador_005.png](https://s21.postimg.org/uludrfno7/Simulador_005.png)](https://postimg.org/image/7kdsloo0j/)
 
-Code is too long to casually shuffle throgh...
+There are instructions for mounting and simulating the game in the provided
+link. The `charmap.mif` available in the repo should be used, also, when
+putting up the simulation. Otherwise stuff is gonna look weird...
